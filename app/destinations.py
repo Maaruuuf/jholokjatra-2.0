@@ -59,8 +59,17 @@ def resolve(text: str | None) -> Destination | None:
         for alias in sorted(d.aliases + (d.name.lower(),), key=len, reverse=True):
             if alias.lower() in t:
                 return d
+    from .places import PLACES, as_destination  # lazy: places imports this module
+
+    if t in PLACES:
+        return as_destination(PLACES[t])
+    for pl in sorted(PLACES.values(), key=lambda x: -len(x.name)):
+        if t == pl.name_bn or pl.name.lower() in t or pl.name_bn in t:
+            return as_destination(pl)
     return None
 
 
 def valid_keys() -> list[str]:
-    return sorted(DESTINATIONS)
+    from .places import PLACES
+
+    return sorted(set(DESTINATIONS) | set(PLACES))

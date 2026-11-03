@@ -3,8 +3,10 @@ from contextlib import asynccontextmanager
 
 import httpx
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from . import __version__
+from .api.places_routes import router as places_router
 from .api.routes import router
 from .config import get_settings
 from .context import AppContext
@@ -25,4 +27,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="JholokJatra", version=__version__,
               description="Evidence-cited 'best day to go' agent for Bangladesh travel, built on free public APIs.",
               lifespan=lifespan)
+app.add_middleware(CORSMiddleware, allow_origins=get_settings().cors_list, allow_methods=["*"], allow_headers=["*"])
 app.include_router(router)
+app.include_router(places_router)

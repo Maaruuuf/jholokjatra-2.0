@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     http_retries: int = 3
     data_dir: Path = Path("data")
     log_level: str = "INFO"
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # cache TTLs (seconds)
     ttl_forecast: int = 3600
@@ -44,6 +45,10 @@ class Settings(BaseSettings):
     @property
     def chroma_dir(self) -> Path:
         return self.data_dir / "chroma"
+
+    @property
+    def cors_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     @property
     def provider_order(self) -> list[str]:

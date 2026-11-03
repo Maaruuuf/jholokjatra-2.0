@@ -113,3 +113,82 @@ class AskResponse(BaseModel):
     degraded: bool = False
     steps: list[dict] = Field(default_factory=list)
     tokens_used: int = 0
+
+
+# ---------------- places / visits ----------------
+class PlaceOut(BaseModel):
+    id: str
+    name: str
+    name_bn: str
+    category: str
+    division: str
+    district: str
+    lat: float
+    lon: float
+    description: str
+    best_season: str = ""
+    unesco: bool = False
+    must_visit: bool = False
+    # per-user state (filled when user_id is given)
+    status: Literal["visited", "wishlist", "none"] = "none"
+    visited_on: Optional[dt.date] = None
+    rating: Optional[int] = None
+    note: str = ""
+
+
+class UserPlaceUpdate(BaseModel):
+    status: Literal["visited", "wishlist", "none"]
+    visited_on: Optional[dt.date] = None
+    rating: Optional[int] = Field(None, ge=1, le=5)
+    note: str = Field("", max_length=500)
+
+
+class Badge(BaseModel):
+    id: str
+    label: str
+    detail: str
+    earned: bool
+
+
+class UserStats(BaseModel):
+    visited: int
+    wishlist: int
+    total_places: int
+    percent_visited: float
+    divisions_visited: list[str]
+    divisions_total: int
+    by_category: dict[str, dict[str, int]]
+    by_division: dict[str, dict[str, int]]
+    average_rating: Optional[float] = None
+    badges: list[Badge]
+
+
+class NearbyPlace(BaseModel):
+    place: PlaceOut
+    distance_km: float
+
+
+class CompareRequest(BaseModel):
+    places: list[str] = Field(..., min_length=2, max_length=6)
+    start_date: Optional[dt.date] = None
+    end_date: Optional[dt.date] = None
+    risk_tolerance: Optional[Literal["low", "medium", "high"]] = None
+    user_id: str = "default"
+
+
+class CompareRow(BaseModel):
+    place_id: str
+    name: str
+    go_days: int = 0
+    caution_days: int = 0
+    avoid_days: int = 0
+    average_score: float = 0
+    best_day: Optional[dt.date] = None
+    top_risk: str = ""
+    error: Optional[str] = None
+
+
+class CompareResponse(BaseModel):
+    start_date: dt.date
+    end_date: dt.date
+    ranking: list[CompareRow]

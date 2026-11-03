@@ -12,7 +12,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from .destinations import DESTINATIONS, Destination, resolve, valid_keys
+from .destinations import Destination, resolve, valid_keys
 from .llm.budget import TokenBudget
 from .llm.router import LLMRouter, LLMUnavailable
 from .llm.structured import structured_call
@@ -93,7 +93,7 @@ async def parse_request(text: str, router: LLMRouter | None, today: dt.date,
     except (LLMUnavailable, ValueError) as exc:
         raise ParseError(f"Could not identify a destination ({type(exc).__name__}). "
                          f"Supported: {', '.join(valid_keys())}") from exc
-    d = DESTINATIONS.get((out.destination or "").lower())
+    d = resolve((out.destination or "").lower())
     if not d:
         raise ParseError(f"Could not identify a destination. Supported: {', '.join(valid_keys())}")
     try:

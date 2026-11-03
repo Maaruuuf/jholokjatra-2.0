@@ -19,6 +19,9 @@ CREATE TABLE IF NOT EXISTS traces (
 CREATE TABLE IF NOT EXISTS llm_usage (
     id INTEGER PRIMARY KEY AUTOINCREMENT, ts REAL NOT NULL, provider TEXT, model TEXT, tier TEXT,
     purpose TEXT, prompt_tokens INTEGER, completion_tokens INTEGER, latency_ms REAL, ok INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS user_places (
+    user_id TEXT NOT NULL, place_id TEXT NOT NULL, status TEXT NOT NULL, visited_on TEXT, rating INTEGER,
+    note TEXT, updated_at REAL NOT NULL, PRIMARY KEY (user_id, place_id));
 CREATE TABLE IF NOT EXISTS tips (
     dest TEXT NOT NULL, idx INTEGER NOT NULL, text TEXT NOT NULL, url TEXT, PRIMARY KEY (dest, idx));
 """
